@@ -14,12 +14,12 @@ const PORT = process.env.PORT || 5000;
 
 const indexRouter = require('./routes/index');
 
+app.use("/images", express.static(path.join(__dirname, './files')));
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Auth routes
