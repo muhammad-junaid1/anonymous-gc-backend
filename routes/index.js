@@ -9,6 +9,7 @@ class UserData {
     this.username = data?.username; 
     this.role = data?.role; 
     this.profile_picture = data?.profile_picture;
+    this.displayName = data?.displayName;
   }
 }
 
@@ -34,9 +35,7 @@ router.get("/profile", async (req, res) => {
 });
 
 router.post("/profile", async (req, res) => {
-  await User.findOneAndUpdate({_id: req.user}, {
-    username: req.body.username
-  });
+  await User.findOneAndUpdate({_id: req.user}, req.body);
 
   const updated = await User.findOne({_id: req.user});
 
