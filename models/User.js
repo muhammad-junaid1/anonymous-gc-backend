@@ -20,6 +20,8 @@ const schema = new mongoose.Schema({
     type: String,
     required: false,
   },
+}, {
+  timestamps: true
 });
 
 const model = mongoose.model("User", schema);
