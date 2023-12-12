@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 const User = require("../models/User");
 const upload = require("../utils/multerStorage");
+const fs = require("fs"); 
+const path = require("path");
 
 class UserData {
   constructor(data) {
@@ -42,12 +44,24 @@ router.post("/upload-file", upload.single("file"), async (req, res) => {
     req.get("x-forwarded-host") || req.get("host")
   }/images/${fileName}`;
 
-  await User.findOneAndUpdate(
+  const user = await User.findOneAndUpdate(
     { _id: req.user },
     {
       profile_picture: fileURL,
     }
   );
+     fs.unlink(
+        path.join(
+          __dirname,
+          "../files/" +
+            user?.profile_picture?.slice(
+              user?.profile_picture.indexOf("images/") + 7
+            )
+        ),
+        (error) => {
+          console.log(error);
+        }
+      );
   res.json();
 });
 

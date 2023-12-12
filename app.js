@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const flowsRouter = require("./routes/flows");
 
 app.use("/images", express.static(path.join(__dirname, "./files")));
 app.use(cors());
@@ -55,5 +56,6 @@ app.post("/login", async (req, res) => {
 app.use(jwtMiddleware);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/flows", flowsRouter);
 
 app.listen(PORT, () => console.log("The server is listening at: ", PORT));
