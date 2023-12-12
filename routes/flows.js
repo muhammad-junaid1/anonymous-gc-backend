@@ -6,7 +6,6 @@ const User = require("../models/User");
 router.get("/", async (req, res) => {
   try {
     const flows = await Flow.find().populate("user").exec();
-    console.log(flows);
     res.json({
       status: true,
       data: flows,
@@ -19,6 +18,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 
 router.post("/", async (req, res) => {
   try {
@@ -35,6 +35,28 @@ router.post("/", async (req, res) => {
     res.json({
       status: true,
       message: "The flow is created successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
+
+router.post("/:id", async (req, res) => {
+  try {
+    const { recipients } = req.body;
+    console.log(req.params.id);
+
+    await Flow.findByIdAndUpdate(req.params.id, {
+      recipients
+    });
+    res.json({
+      status: true,
+      message: "The flow is updated successfully",
     });
   } catch (error) {
     console.log(error);
