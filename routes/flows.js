@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Flow = require("../models/Flow");
+const User = require("../models/User");
 
 router.get("/", async (req, res) => {
   try {
@@ -27,8 +28,10 @@ router.post("/", async (req, res) => {
       user,
       recipients,
     });
-    await newFlow.save();
-
+    const flow = await newFlow.save();
+    await User.findByIdAndUpdate(user, {
+      flow: flow?._id
+    }) 
     res.json({
       status: true,
       message: "The flow is created successfully",

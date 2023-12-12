@@ -10,14 +10,17 @@ router.get("/", async (req, res) => {
   try {
     let allUsers = [];
 
-    // if (req.query["without-flow"] === "1") {
-    //   const userIds = (await Flow.find()).map((flow) => flow?.user);
-    //   allUsers = await User.find({ role: 2, _id: { $nin: userIds } }).sort({
-    //     createdAt: -1,
-    //   });
-    // } else {
+    if (req.query["without-flow"] === "1") {
+      allUsers = await User.find({
+        role: 2,
+        flow: { $exists: false },
+      }).sort({
+        createdAt: -1,
+      });
+      console.log(allUsers)
+    } else {
       allUsers = await User.find({ role: 2 }).sort({ createdAt: -1 });
-    // }
+    }
 
     res.json({
       status: true,
