@@ -6,10 +6,19 @@ const cors = require("cors");
 const jwtMiddleware = require("./middlewares/jwtMiddleware");
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
+const app = express();
+const http = require("http");
+const { getUsers, setUsers, addUser } = require("./users");
+const server = http.createServer(app);
 require("dotenv/config");
 require("./db")();
 
-const app = express();
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
 const PORT = process.env.PORT || 5000;
 
 const indexRouter = require("./routes/index");
@@ -58,4 +67,36 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/flows", flowsRouter);
 
-app.listen(PORT, () => console.log("The server is listening at: ", PORT));
+const addNewUser = async (User) => {
+  if (!getUsers().some((user) => user?._id === User?._id)) {
+    addUser(User);
+  }
+};
+
+const removeUser = (socketId) => {
+  console.log(
+    "User removed: ",
+    getUsers()?.find((user) => user?.socketId === socketId)?.userName
+  );
+  setUsers(getUsers().filter((user) => user.socketId !== socketId));
+};
+
+// Sockets
+io.on("connection", (socket) => {
+  socket.on("chat_add_user", (User) => {
+    addNewUser({
+      ...User,
+      socketId: socket.id,
+    });
+    console.log("New user added: ", User?.displayName);
+    io.emit("chat_getOnlineUsers", getUsers());
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Socket got disconnected");
+    removeUser(socket.id);
+    io.emit("chat_getOnlineUsers", getUsers());
+  });
+});
+
+server.listen(PORT, () => console.log("The server is listening at: ", PORT));

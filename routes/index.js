@@ -7,6 +7,7 @@ const path = require("path");
 
 class UserData {
   constructor(data) {
+    this._id = data?._id,
     this.username = data?.username;
     this.role = data?.role;
     this.profile_picture = data?.profile_picture;

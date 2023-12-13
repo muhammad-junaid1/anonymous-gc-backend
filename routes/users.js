@@ -4,6 +4,7 @@ const upload = require("../utils/multerStorage");
 const User = require("../models/User");
 const fs = require("fs");
 const Flow = require("../models/Flow");
+const {getUsers} = require("../users");
 const path = require("path");
 
 router.get("/", async (req, res) => {
@@ -17,7 +18,9 @@ router.get("/", async (req, res) => {
       }).sort({
         createdAt: -1,
       });
-      console.log(allUsers)
+    } else if(req.query["online"] === "1"){
+      console.log(getUsers());
+      allUsers = getUsers()?.length; 
     } else {
       allUsers = await User.find({ role: 2 }).sort({ createdAt: -1 });
     }
