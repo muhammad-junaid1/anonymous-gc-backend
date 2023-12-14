@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const jwtMiddleware = require("./middlewares/jwtMiddleware");
 const User = require("./models/User");
+const Message = require("./models/Message");
 const jwt = require("jsonwebtoken");
 const app = express();
 const http = require("http");
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 5000;
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const flowsRouter = require("./routes/flows");
+const messagesRouter = require("./routes/messages");
 
 app.use("/images", express.static(path.join(__dirname, "./files")));
 app.use(cors());
@@ -66,6 +68,7 @@ app.use(jwtMiddleware);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/flows", flowsRouter);
+app.use("/messages", messagesRouter);
 
 const addNewUser = async (User) => {
   if (!getUsers().some((user) => user?._id === User?._id)) {
@@ -91,6 +94,13 @@ io.on("connection", (socket) => {
     console.log("New user added: ", User?.displayName);
     io.emit("chat_getOnlineUsers", getUsers());
   });
+
+  socket.on("chat_send_message", async (messageData) => {
+      const newMessage = new Message(messageData);
+      const storeMessage = await newMessage.save();
+      const messageStored = await Message.findById(storeMessage?._id).populate("from").populate("recipients").exec();
+      io.emit("chat_message", messageStored);
+  })
 
   socket.on("disconnect", () => {
     console.log("Socket got disconnected");

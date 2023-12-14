@@ -19,7 +19,6 @@ router.get("/", async (req, res) => {
         createdAt: -1,
       });
     } else if(req.query["online"] === "1"){
-      console.log(getUsers());
       allUsers = getUsers()?.length; 
     } else {
       allUsers = await User.find({ role: 2 }).sort({ createdAt: -1 });
