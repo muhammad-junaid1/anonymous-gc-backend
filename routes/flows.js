@@ -19,6 +19,23 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const flow = await Flow.findById(req.params.id);
+    res.json({
+      status: true,
+      data: flow,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
+
 
 router.post("/", async (req, res) => {
   try {
