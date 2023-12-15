@@ -105,17 +105,23 @@ io.on("connection", (socket) => {
       io.emit("chat_message", messageStored);
   })
 
-  socket.on("chat_mark_read", async() => {
-    await User?.findOneAndUpdate({role: 1}, {
+  socket.on("chat_mark_read", async(userId) => {
+    await User?.findByIdAndUpdate(userId, {
       unreadCount: 0
     })
   })
 
-  socket.on("chat_recipients_update", (recipients) => {
+  socket.on("chat_recipients_update", async (data) => {
+    const {recipients, updates} = data;
     const onlineRecipients = getUsers()?.filter((user) => recipients?.includes(user?._id));
+
+    const incObj = {$inc: {unreadCount: 1 }};
+    const decObj = {$dec: {unreadCount: 1 }};
+    const updateRequests = await Promise.all(updates?.map((update) => User?.findByIdAndUpdate(update?.recipient, update?.update === "increment" ? incObj : decObj)));
     onlineRecipients?.forEach((recip) => {
-      io.to(recip?.socketId).emit("chat_recipients_updated", true);
+      io.to(recip?.socketId).emit("chat_recipients_updated", updates?.find(update => update?.recipient === recip?._id));
     })
+
   })
 
   socket.on("disconnect", () => {
