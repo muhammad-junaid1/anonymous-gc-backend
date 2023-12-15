@@ -99,7 +99,16 @@ io.on("connection", (socket) => {
       const newMessage = new Message(messageData);
       const storeMessage = await newMessage.save();
       const messageStored = await Message.findById(storeMessage?._id).populate("from").populate("recipients").exec();
+      if(messageStored?.from?.role !== 1) {
+        await User.findOneAndUpdate({role: 1}, {$inc: {unreadCount: 1}});
+      }
       io.emit("chat_message", messageStored);
+  })
+
+  socket.on("chat_mark_read", async() => {
+    await User?.findOneAndUpdate({role: 1}, {
+      unreadCount: 0
+    })
   })
 
   socket.on("chat_recipients_update", (recipients) => {

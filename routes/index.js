@@ -10,6 +10,7 @@ class UserData {
     this._id = data?._id,
     this.username = data?.username;
     this.role = data?.role;
+    this.unreadCount = data?.unreadCount;
     this.profile_picture = data?.profile_picture;
     this.displayName = data?.displayName;
   }

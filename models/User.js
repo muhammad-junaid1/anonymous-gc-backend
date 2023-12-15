@@ -25,6 +25,10 @@ const schema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Flow",
     },
+    unreadCount: {
+      type: Number, 
+      default: 0
+    }
   },
   {
     timestamps: true,
