@@ -102,6 +102,13 @@ io.on("connection", (socket) => {
       io.emit("chat_message", messageStored);
   })
 
+  socket.on("chat_recipients_update", (recipients) => {
+    const onlineRecipients = getUsers()?.filter((user) => recipients?.includes(user?._id));
+    onlineRecipients?.forEach((recip) => {
+      io.to(recip?.socketId).emit("chat_recipients_updated", true);
+    })
+  })
+
   socket.on("disconnect", () => {
     console.log("Socket got disconnected");
     removeUser(socket.id);
