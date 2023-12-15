@@ -6,6 +6,7 @@ const cors = require("cors");
 const jwtMiddleware = require("./middlewares/jwtMiddleware");
 const User = require("./models/User");
 const Message = require("./models/Message");
+const upload = require("./utils/multerStorage");
 const jwt = require("jsonwebtoken");
 const app = express();
 const http = require("http");
@@ -60,6 +61,43 @@ app.post("/login", async (req, res) => {
     res.status(401).json({
       status: false,
       message: "The user doesn't exist!",
+    });
+  }
+});
+
+app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
+  try {
+    const uploadedFile = req.file;
+    let fileURL = "";
+
+    if (uploadedFile) {
+      const fileName = uploadedFile?.filename?.toString()?.replaceAll(" ", "");
+      fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
+        req.get("x-forwarded-host") || req.get("host")
+      }/images/${fileName}`;
+    }
+
+    const data = req.body;
+    data["recipients"] = [];
+    data["image"] = fileURL;
+
+     const newMessage = new Message(data);
+      const storeMessage = await newMessage.save();
+      const messageStored = await Message.findById(storeMessage?._id).populate("from").populate("recipients").exec();
+      if(messageStored?.from?.role !== 1) {
+        await User.findOneAndUpdate({role: 1}, {$inc: {unreadCount: 1}});
+      }
+      io.emit("chat_message", messageStored);
+    
+    res.json({
+      status: true,
+      data: messageStored,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: false,
+      message: "Something went wrong",
     });
   }
 });

@@ -7,7 +7,6 @@ const schema = new mongoose.Schema({
      },
       content: {
         type: String, 
-        required: true,
       },
       from: {
         type: mongoose.Schema.ObjectId, 
@@ -19,6 +18,9 @@ const schema = new mongoose.Schema({
         ref: "User", 
         required: true
       },
+      image: {
+        type: String, 
+      }
 }, {timestamps: true});
 
 const model = mongoose.model("Message", schema);
