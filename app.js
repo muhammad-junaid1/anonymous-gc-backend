@@ -197,7 +197,7 @@ io.on("connection", (socket) => {
 
   socket.on("chat_is_typing", (username) => {
     const admin = getUsers()?.find((user) => user?.role === 1);
-    if(admin){
+    if(admin && username !== admin?.displayName){
       io.to(admin?.socketId).emit("chat_is_typing", username);
     }
   })
