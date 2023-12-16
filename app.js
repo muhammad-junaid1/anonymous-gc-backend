@@ -81,14 +81,17 @@ app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
     data["recipients"] = [];
     data["image"] = fileURL;
 
-     const newMessage = new Message(data);
-      const storeMessage = await newMessage.save();
-      const messageStored = await Message.findById(storeMessage?._id).populate("from").populate("recipients").exec();
-      if(messageStored?.from?.role !== 1) {
-        await User.findOneAndUpdate({role: 1}, {$inc: {unreadCount: 1}});
-      }
-      io.emit("chat_message", messageStored);
-    
+    const newMessage = new Message(data);
+    const storeMessage = await newMessage.save();
+    const messageStored = await Message.findById(storeMessage?._id)
+      .populate("from")
+      .populate("recipients")
+      .exec();
+    if (messageStored?.from?.role !== 1) {
+      await User.findOneAndUpdate({ role: 1 }, { $inc: { unreadCount: 1 } });
+    }
+    io.emit("chat_message", messageStored);
+
     res.json({
       status: true,
       data: messageStored,
@@ -134,33 +137,63 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat_send_message", async (messageData) => {
-      const newMessage = new Message(messageData);
-      const storeMessage = await newMessage.save();
-      const messageStored = await Message.findById(storeMessage?._id).populate("from").populate("recipients").exec();
-      if(messageStored?.from?.role !== 1) {
-        await User.findOneAndUpdate({role: 1}, {$inc: {unreadCount: 1}});
-      }
-      io.emit("chat_message", messageStored);
-  })
+    const newMessage = new Message(messageData);
+    const storeMessage = await newMessage.save();
+    const messageStored = await Message.findById(storeMessage?._id)
+      .populate("from")
+      .populate("recipients")
+      .exec();
+    if (messageStored?.from?.role !== 1) {
+      await User.findOneAndUpdate({ role: 1 }, { $inc: { unreadCount: 1 } });
+    }
+    io.emit("chat_message", messageStored);
+  });
 
-  socket.on("chat_mark_read", async(userId) => {
+  socket.on("chat_mark_read", async (userId) => {
     await User?.findByIdAndUpdate(userId, {
-      unreadCount: 0
-    })
-  })
+      unreadCount: 0,
+    });
+  });
 
   socket.on("chat_recipients_update", async (data) => {
-    const {recipients, updates} = data;
-    const onlineRecipients = getUsers()?.filter((user) => recipients?.includes(user?._id));
+    const { recipients, updates } = data;
+    const onlineRecipients = getUsers()?.filter((user) =>
+      recipients?.includes(user?._id)
+    );
 
-    const incObj = {$inc: {unreadCount: 1 }};
-    const decObj = {$dec: {unreadCount: 1 }};
-    const updateRequests = await Promise.all(updates?.map((update) => User?.findByIdAndUpdate(update?.recipient, update?.update === "increment" ? incObj : decObj)));
+    const incObj = { $inc: { unreadCount: 1 } };
+    const decObj = { $dec: { unreadCount: 1 } };
+    const updateRequests = await Promise.all(
+      updates?.map((update) =>
+        User?.findByIdAndUpdate(
+          update?.recipient,
+          update?.update === "increment" ? incObj : decObj
+        )
+      )
+    );
     onlineRecipients?.forEach((recip) => {
-      io.to(recip?.socketId).emit("chat_recipients_updated", updates?.find(update => update?.recipient === recip?._id));
-    })
+      io.to(recip?.socketId).emit(
+        "chat_recipients_updated",
+        updates?.find((update) => update?.recipient === recip?._id)
+      );
+    });
+  });
 
-  })
+  socket.on("chat_delete_message", async (id) => {
+    try {
+      const override = {
+        type: "deleted",
+        content: "This message was deleted",
+        recipients: [],
+        image: "",
+      };
+      await Message.findByIdAndUpdate(id, override);
+
+      io.emit("chat_message_deleted", id);
+    } catch (error) {
+      socket.emit("chat_delete_message_failed", true);
+    }
+  });
 
   socket.on("disconnect", () => {
     console.log("Socket got disconnected");
