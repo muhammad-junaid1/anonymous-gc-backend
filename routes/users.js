@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
         createdAt: -1,
       });
     } else if(req.query["online"] === "1"){
-      allUsers = getUsers()?.length; 
+      allUsers = getUsers()?.filter((user) => user?.role !== 1); 
     } else {
       allUsers = await User.find({ role: 2 }).sort({ createdAt: -1 });
     }

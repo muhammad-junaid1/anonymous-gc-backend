@@ -133,7 +133,7 @@ io.on("connection", (socket) => {
       socketId: socket.id,
     });
     console.log("New user added: ", User?.displayName);
-    io.emit("chat_getOnlineUsers", getUsers());
+    io.emit("chat_getOnlineUsers", getUsers()?.filter((user) => user?.role !== 1));
   });
 
   socket.on("chat_send_message", async (messageData) => {
@@ -205,7 +205,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Socket got disconnected");
     removeUser(socket.id);
-    io.emit("chat_getOnlineUsers", getUsers());
+    io.emit("chat_getOnlineUsers", getUsers()?.filter((user) => user?.role !== 1));
   });
 });
 
