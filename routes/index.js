@@ -40,31 +40,45 @@ router.post("/profile", async (req, res) => {
 });
 
 router.post("/upload-file", upload.single("file"), async (req, res) => {
-  const uploadedFile = req.file;
-  const fileName = uploadedFile.filename?.toString()?.replaceAll(" ", "");
-  const fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
-    req.get("x-forwarded-host") || req.get("host")
-  }/images/${fileName}`;
 
-  const user = await User.findOneAndUpdate(
-    { _id: req.user },
-    {
-      profile_picture: fileURL,
-    }
-  );
-     fs.unlink(
-        path.join(
-          __dirname,
-          "../files/" +
-            user?.profile_picture?.slice(
-              user?.profile_picture.indexOf("images/") + 7
-            )
-        ),
-        (error) => {
-          console.log(error);
-        }
-      );
-  res.json();
+  try {
+
+    const uploadedFile = req.file;
+    const fileName = uploadedFile.filename?.toString()?.replaceAll(" ", "");
+    const fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
+      req.get("x-forwarded-host") || req.get("host")
+    }/images/${fileName}`;
+  
+    const user = await User.findOneAndUpdate(
+      { _id: req.user },
+      {
+        profile_picture: fileURL,
+      }
+    );
+       fs.unlink(
+          path.join(
+            __dirname,
+            "../files/" +
+              user?.profile_picture?.slice(
+                user?.profile_picture.indexOf("images/") + 7
+              )
+          ),
+          (error) => {
+            console.log(error);
+          }
+        );
+    res.json({
+      status: true, 
+      data: {...user, profile_picture: fileURL}
+    });
+  }
+  catch(error) {
+    console.log(error);
+    res.status(500).json({
+      status: false, 
+      message: "Something went wrong"
+    })
+  }
 });
 
 module.exports = router;

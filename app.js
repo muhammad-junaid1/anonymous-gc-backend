@@ -65,6 +65,14 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+
+app.use(jwtMiddleware);
+app.use("/", indexRouter);
+app.use("/users", usersRouter);
+app.use("/flows", flowsRouter);
+app.use("/messages", messagesRouter);
+
 app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
   try {
     const uploadedFile = req.file;
@@ -104,12 +112,6 @@ app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
     });
   }
 });
-
-app.use(jwtMiddleware);
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/flows", flowsRouter);
-app.use("/messages", messagesRouter);
 
 const addNewUser = async (User) => {
   if (!getUsers().some((user) => user?._id === User?._id)) {
