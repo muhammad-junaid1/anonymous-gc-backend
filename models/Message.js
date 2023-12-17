@@ -16,7 +16,6 @@ const schema = new mongoose.Schema({
       recipients: {
         type: [mongoose.Schema.ObjectId], 
         ref: "User", 
-        required: true
       },
       image: {
         type: String, 

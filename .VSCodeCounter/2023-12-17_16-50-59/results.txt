@@ -1,0 +1,46 @@
+Date : 2023-12-17 16:50:59
+Directory : c:\Users\HP\Desktop\anonymous-gc-backend
+Total : 15 files,  3182 codes, 2 comments, 94 blanks, all 3278 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          2 |      2,515 |          0 |          2 |      2,517 |
+| JavaScript |         13 |        667 |          2 |         92 |        761 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                     |         15 |      3,182 |          2 |         94 |      3,278 |
+| . (Files)                                                             |          5 |      2,715 |          2 |         35 |      2,752 |
+| controllers                                                           |          1 |          0 |          0 |          1 |          1 |
+| middlewares                                                           |          1 |         23 |          0 |          5 |         28 |
+| models                                                                |          3 |         77 |          0 |          7 |         84 |
+| routes                                                                |          4 |        352 |          0 |         44 |        396 |
+| utils                                                                 |          1 |         15 |          0 |          2 |         17 |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                              | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\HP\Desktop\anonymous-gc-backend\app.js                       | JavaScript |        184 |          2 |         29 |        215 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\controllers\index.js         | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\db.js                        | JavaScript |         10 |          0 |          3 |         13 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\middlewares\jwtMiddleware.js | JavaScript |         23 |          0 |          5 |         28 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\models\Flow.js               | JavaScript |         15 |          0 |          2 |         17 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\models\Message.js            | JavaScript |         24 |          0 |          2 |         26 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\models\User.js               | JavaScript |         38 |          0 |          3 |         41 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\package-lock.json            | JSON       |      2,489 |          0 |          1 |      2,490 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\package.json                 | JSON       |         26 |          0 |          1 |         27 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\routes\flows.js              | JavaScript |         77 |          0 |         11 |         88 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\routes\index.js              | JavaScript |         73 |          0 |         12 |         85 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\routes\messages.js           | JavaScript |         59 |          0 |          5 |         64 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\routes\users.js              | JavaScript |        143 |          0 |         16 |        159 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\users.js                     | JavaScript |          6 |          0 |          1 |          7 |
+| c:\Users\HP\Desktop\anonymous-gc-backend\utils\multerStorage.js       | JavaScript |         15 |          0 |          2 |         17 |
+| Total                                                                 |            |      3,182 |          2 |         94 |      3,278 |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+

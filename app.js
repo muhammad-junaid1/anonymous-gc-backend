@@ -73,7 +73,7 @@ app.use("/users", usersRouter);
 app.use("/flows", flowsRouter);
 app.use("/messages", messagesRouter);
 
-app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
+app.post("/sendImage", upload.single("file"), async (req, res) => {
   try {
     const uploadedFile = req.file;
     let fileURL = "";
@@ -86,8 +86,8 @@ app.post("/messages/sendImage", upload.single("file"), async (req, res) => {
     }
 
     const data = req.body;
-    data["recipients"] = [];
     data["image"] = fileURL;
+
 
     const newMessage = new Message(data);
     const storeMessage = await newMessage.save();

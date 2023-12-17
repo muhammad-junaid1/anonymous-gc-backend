@@ -1,0 +1,17 @@
+"filename", "language", "JavaScript", "JSON", "comment", "blank", "total"
+"c:\Users\HP\Desktop\anonymous-gc-backend\app.js", "JavaScript", 184, 0, 2, 29, 215
+"c:\Users\HP\Desktop\anonymous-gc-backend\controllers\index.js", "JavaScript", 0, 0, 0, 1, 1
+"c:\Users\HP\Desktop\anonymous-gc-backend\db.js", "JavaScript", 10, 0, 0, 3, 13
+"c:\Users\HP\Desktop\anonymous-gc-backend\middlewares\jwtMiddleware.js", "JavaScript", 23, 0, 0, 5, 28
+"c:\Users\HP\Desktop\anonymous-gc-backend\models\Flow.js", "JavaScript", 15, 0, 0, 2, 17
+"c:\Users\HP\Desktop\anonymous-gc-backend\models\Message.js", "JavaScript", 24, 0, 0, 2, 26
+"c:\Users\HP\Desktop\anonymous-gc-backend\models\User.js", "JavaScript", 38, 0, 0, 3, 41
+"c:\Users\HP\Desktop\anonymous-gc-backend\package-lock.json", "JSON", 0, 2489, 0, 1, 2490
+"c:\Users\HP\Desktop\anonymous-gc-backend\package.json", "JSON", 0, 26, 0, 1, 27
+"c:\Users\HP\Desktop\anonymous-gc-backend\routes\flows.js", "JavaScript", 77, 0, 0, 11, 88
+"c:\Users\HP\Desktop\anonymous-gc-backend\routes\index.js", "JavaScript", 73, 0, 0, 12, 85
+"c:\Users\HP\Desktop\anonymous-gc-backend\routes\messages.js", "JavaScript", 59, 0, 0, 5, 64
+"c:\Users\HP\Desktop\anonymous-gc-backend\routes\users.js", "JavaScript", 143, 0, 0, 16, 159
+"c:\Users\HP\Desktop\anonymous-gc-backend\users.js", "JavaScript", 6, 0, 0, 1, 7
+"c:\Users\HP\Desktop\anonymous-gc-backend\utils\multerStorage.js", "JavaScript", 15, 0, 0, 2, 17
+"Total", "-", 667, 2515, 2, 94, 3278
