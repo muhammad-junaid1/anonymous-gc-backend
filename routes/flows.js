@@ -87,6 +87,9 @@ router.post("/:id", async (req, res) => {
 router.delete("/:flowId", async (req, res) => {
   try {
     const user = await Flow.findOneAndDelete({ _id: req.params.flowId });
+    await User.findByIdAndUpdate(user?.user, {
+      $unset: {flow: 1}
+    });
     res.json({
       status: true,
       message: "The flow has been deleted successfuly",
