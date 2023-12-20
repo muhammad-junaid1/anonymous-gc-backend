@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const jwtMiddleware = require("./middlewares/jwtMiddleware");
 const User = require("./models/User");
+const Flow = require("./models/Flow");
 const Message = require("./models/Message");
 const upload = require("./utils/multerStorage");
 const jwt = require("jsonwebtoken");
@@ -139,7 +140,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat_send_message", async (messageData) => {
-    const newMessage = new Message(messageData);
+    const data = messageData; 
+    const user = await User.findById(messageData?.from); 
+    let recipients = []; 
+    if(user?.flow) {
+      const flow = await Flow.findById(user?.flow);
+      recipients = flow?.recipients; 
+    }
+
+    data["recipients"] = recipients; 
+
+    const newMessage = new Message(data);
     const storeMessage = await newMessage.save();
     const messageStored = await Message.findById(storeMessage?._id)
       .populate("from")
@@ -149,6 +160,28 @@ io.on("connection", (socket) => {
       await User.findOneAndUpdate({ role: 1 }, { $inc: { unreadCount: 1 } });
     }
     io.emit("chat_message", messageStored);
+
+    const onlineRecipients = getUsers()?.filter((user) =>
+      recipients?.includes(user?._id)
+    );
+
+    const incObj = { $inc: { unreadCount: 1 } };
+    await Promise.all(
+      recipients?.map((recipient) =>
+        User?.findByIdAndUpdate(
+          recipient, incObj
+        )
+      )
+    );
+    onlineRecipients?.forEach((recip) => {
+      io.to(recip?.socketId).emit(
+        "chat_recipients_updated",
+        {
+          recipient: recip?._id, 
+          update: "increment"
+        }
+      );
+    });
   });
 
   socket.on("chat_mark_read", async (userId) => {
