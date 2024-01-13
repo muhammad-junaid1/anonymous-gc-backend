@@ -60,7 +60,7 @@ router.post("/upload-file", upload.single("file"), async (req, res) => {
             __dirname,
             "../files/" +
               user?.profile_picture?.slice(
-                user?.profile_picture.indexOf("images/") + 7
+                user?.profile_picture.indexOf("files/") + 7
               )
           ),
           (error) => {

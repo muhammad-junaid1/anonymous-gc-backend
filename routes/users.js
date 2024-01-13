@@ -103,7 +103,7 @@ router.post("/:userID", upload.single("file"), async (req, res) => {
           __dirname,
           "../files/" +
             user?.profile_picture?.slice(
-              user?.profile_picture.indexOf("images/") + 7
+              user?.profile_picture.indexOf("files/") + 7
             )
         ),
         (error) => {
@@ -133,7 +133,7 @@ router.delete("/:userID", async (req, res) => {
           __dirname,
           "../files/" +
             user?.profile_picture?.slice(
-              user?.profile_picture.indexOf("images/") + 7
+              user?.profile_picture.indexOf("files/") + 7
             )
         ),
         (error) => {
