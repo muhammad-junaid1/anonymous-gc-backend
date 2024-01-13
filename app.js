@@ -86,8 +86,21 @@ app.post("/sendImage", upload.single("file"), async (req, res) => {
       }/images/${fileName}`;
     }
 
+     let recipients = []; 
+    const user = await User.findById(req.body?.from); 
+    if(user?.flow && (req.query?.isReply === 'false')) {
+      const flow = await Flow.findById(user?.flow);
+      recipients = flow?.recipients; 
+    }
+
+    if(req.query?.isReply !== 'false') {
+      recipients.push(req.query?.isReply);
+    }
+
+
     const data = req.body;
     data["image"] = fileURL;
+    data["recipients"] = recipients;
 
 
     const newMessage = new Message(data);
@@ -100,6 +113,28 @@ app.post("/sendImage", upload.single("file"), async (req, res) => {
       await User.findOneAndUpdate({ role: 1 }, { $inc: { unreadCount: 1 } });
     }
     io.emit("chat_message", messageStored);
+
+       const onlineRecipients = getUsers()?.filter((user) =>
+      recipients?.includes(user?._id)
+    );
+
+    const incObj = { $inc: { unreadCount: 1 } };
+    await Promise.all(
+      recipients?.map((recipient) =>
+        User?.findByIdAndUpdate(
+          recipient, incObj
+        )
+      )
+    );
+    onlineRecipients?.forEach((recip) => {
+      io.to(recip?.socketId).emit(
+        "chat_recipients_updated",
+        {
+          recipient: recip?._id, 
+          update: "increment"
+        }
+      );
+    });
 
     res.json({
       status: true,
@@ -140,12 +175,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat_send_message", async (messageData) => {
-    const data = messageData; 
-    const user = await User.findById(messageData?.from); 
+    const data = messageData?.message; 
+    const user = await User.findById(messageData?.message?.from); 
     let recipients = []; 
-    if(user?.flow) {
+    if(user?.flow && !(messageData?.isReply)) {
       const flow = await Flow.findById(user?.flow);
       recipients = flow?.recipients; 
+    }
+
+    if(messageData?.isReply) {
+      recipients.push(messageData?.isReply);
     }
 
     data["recipients"] = recipients; 
