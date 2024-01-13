@@ -29,7 +29,7 @@ const usersRouter = require("./routes/users");
 const flowsRouter = require("./routes/flows");
 const messagesRouter = require("./routes/messages");
 
-app.use("/images", express.static(path.join(__dirname, "./files")));
+app.use("/files", express.static(path.join(__dirname, "./files")));
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
@@ -66,15 +66,13 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
-
 app.use(jwtMiddleware);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/flows", flowsRouter);
 app.use("/messages", messagesRouter);
 
-app.post("/sendImage", upload.single("file"), async (req, res) => {
+app.post("/sendFile", upload.single("file"), async (req, res) => {
   try {
     const uploadedFile = req.file;
     let fileURL = "";
@@ -83,25 +81,23 @@ app.post("/sendImage", upload.single("file"), async (req, res) => {
       const fileName = uploadedFile?.filename?.toString()?.replaceAll(" ", "");
       fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
         req.get("x-forwarded-host") || req.get("host")
-      }/images/${fileName}`;
+      }/files/${fileName}`;
     }
 
-     let recipients = []; 
-    const user = await User.findById(req.body?.from); 
-    if(user?.flow && (req.query?.isReply === 'false')) {
+    let recipients = [];
+    const user = await User.findById(req.body?.from);
+    if (user?.flow && req.query?.isReply === "false") {
       const flow = await Flow.findById(user?.flow);
-      recipients = flow?.recipients; 
+      recipients = flow?.recipients;
     }
 
-    if(req.query?.isReply !== 'false') {
+    if (req.query?.isReply !== "false") {
       recipients.push(req.query?.isReply);
     }
 
-
     const data = req.body;
-    data["image"] = fileURL;
+    data["file"] = fileURL;
     data["recipients"] = recipients;
-
 
     const newMessage = new Message(data);
     const storeMessage = await newMessage.save();
@@ -114,26 +110,19 @@ app.post("/sendImage", upload.single("file"), async (req, res) => {
     }
     io.emit("chat_message", messageStored);
 
-       const onlineRecipients = getUsers()?.filter((user) =>
+    const onlineRecipients = getUsers()?.filter((user) =>
       recipients?.includes(user?._id)
     );
 
     const incObj = { $inc: { unreadCount: 1 } };
     await Promise.all(
-      recipients?.map((recipient) =>
-        User?.findByIdAndUpdate(
-          recipient, incObj
-        )
-      )
+      recipients?.map((recipient) => User?.findByIdAndUpdate(recipient, incObj))
     );
     onlineRecipients?.forEach((recip) => {
-      io.to(recip?.socketId).emit(
-        "chat_recipients_updated",
-        {
-          recipient: recip?._id, 
-          update: "increment"
-        }
-      );
+      io.to(recip?.socketId).emit("chat_recipients_updated", {
+        recipient: recip?._id,
+        update: "increment",
+      });
     });
 
     res.json({
@@ -171,23 +160,26 @@ io.on("connection", (socket) => {
       socketId: socket.id,
     });
     console.log("New user added: ", User?.displayName);
-    io.emit("chat_getOnlineUsers", getUsers()?.filter((user) => user?.role !== 1));
+    io.emit(
+      "chat_getOnlineUsers",
+      getUsers()?.filter((user) => user?.role !== 1)
+    );
   });
 
   socket.on("chat_send_message", async (messageData) => {
-    const data = messageData?.message; 
-    const user = await User.findById(messageData?.message?.from); 
-    let recipients = []; 
-    if(user?.flow && !(messageData?.isReply)) {
+    const data = messageData?.message;
+    const user = await User.findById(messageData?.message?.from);
+    let recipients = [];
+    if (user?.flow && !messageData?.isReply) {
       const flow = await Flow.findById(user?.flow);
-      recipients = flow?.recipients; 
+      recipients = flow?.recipients;
     }
 
-    if(messageData?.isReply) {
+    if (messageData?.isReply) {
       recipients.push(messageData?.isReply);
     }
 
-    data["recipients"] = recipients; 
+    data["recipients"] = recipients;
 
     const newMessage = new Message(data);
     const storeMessage = await newMessage.save();
@@ -206,20 +198,13 @@ io.on("connection", (socket) => {
 
     const incObj = { $inc: { unreadCount: 1 } };
     await Promise.all(
-      recipients?.map((recipient) =>
-        User?.findByIdAndUpdate(
-          recipient, incObj
-        )
-      )
+      recipients?.map((recipient) => User?.findByIdAndUpdate(recipient, incObj))
     );
     onlineRecipients?.forEach((recip) => {
-      io.to(recip?.socketId).emit(
-        "chat_recipients_updated",
-        {
-          recipient: recip?._id, 
-          update: "increment"
-        }
-      );
+      io.to(recip?.socketId).emit("chat_recipients_updated", {
+        recipient: recip?._id,
+        update: "increment",
+      });
     });
   });
 
@@ -271,15 +256,18 @@ io.on("connection", (socket) => {
 
   socket.on("chat_is_typing", (username) => {
     const admin = getUsers()?.find((user) => user?.role === 1);
-    if(admin && username !== admin?.displayName){
+    if (admin && username !== admin?.displayName) {
       io.to(admin?.socketId).emit("chat_is_typing", username);
     }
-  })
+  });
 
   socket.on("disconnect", () => {
     console.log("Socket got disconnected");
     removeUser(socket.id);
-    io.emit("chat_getOnlineUsers", getUsers()?.filter((user) => user?.role !== 1));
+    io.emit(
+      "chat_getOnlineUsers",
+      getUsers()?.filter((user) => user?.role !== 1)
+    );
   });
 });
 

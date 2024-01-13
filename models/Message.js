@@ -8,6 +8,9 @@ const schema = new mongoose.Schema({
       content: {
         type: String, 
       },
+      fileName: {
+        type: String
+      },
       from: {
         type: mongoose.Schema.ObjectId, 
         ref: "User", 
@@ -17,7 +20,7 @@ const schema = new mongoose.Schema({
         type: [mongoose.Schema.ObjectId], 
         ref: "User", 
       },
-      image: {
+      file: {
         type: String, 
       }
 }, {timestamps: true});

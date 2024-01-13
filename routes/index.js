@@ -47,7 +47,7 @@ router.post("/upload-file", upload.single("file"), async (req, res) => {
     const fileName = uploadedFile.filename?.toString()?.replaceAll(" ", "");
     const fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
       req.get("x-forwarded-host") || req.get("host")
-    }/images/${fileName}`;
+    }/files/${fileName}`;
   
     const user = await User.findOneAndUpdate(
       { _id: req.user },
