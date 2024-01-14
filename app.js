@@ -130,7 +130,7 @@ app.post("/sendFile", upload.single("file"), async (req, res) => {
       data: messageStored,
     });
   } catch (error) {
-    console.log(error);
+    console.log("something went wrong:", error);
     res.status(500).json({
       status: false,
       message: "Something went wrong",
