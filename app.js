@@ -29,7 +29,7 @@ const usersRouter = require("./routes/users");
 const flowsRouter = require("./routes/flows");
 const messagesRouter = require("./routes/messages");
 
-app.use("/files", express.static(path.join(__dirname, "./files")));
+app.use("/assets", express.static(path.join(__dirname, "./files")));
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));

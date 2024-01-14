@@ -45,7 +45,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     const fileName = uploadedFile?.filename?.toString()?.replaceAll(" ", "");
     fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
       req.get("x-forwarded-host") || req.get("host")
-    }/files/${fileName}`;
+    }/assets/${fileName}`;
   }
 
   const newUser = new User({
@@ -79,7 +79,7 @@ router.post("/:userID", upload.single("file"), async (req, res) => {
     const fileName = uploadedFile?.filename?.toString()?.replaceAll(" ", "");
     fileURL = `${req.get("x-forwarded-proto") || req.protocol}://${
       req.get("x-forwarded-host") || req.get("host")
-    }/files/${fileName}`;
+    }/assets/${fileName}`;
   }
 
   const updatedUser = {
@@ -103,7 +103,7 @@ router.post("/:userID", upload.single("file"), async (req, res) => {
           __dirname,
           "../files/" +
             user?.profile_picture?.slice(
-              user?.profile_picture.indexOf("files/") + 7
+              user?.profile_picture.indexOf("assets/") + 7
             )
         ),
         (error) => {
