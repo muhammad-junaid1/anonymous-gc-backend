@@ -112,18 +112,24 @@ app.post("/sendFile", upload.single("file"), async (req, res) => {
 
     const onlineRecipients = getUsers()?.filter((user) =>
       recipients?.includes(user?._id)
-    );
+    ) || [];
 
     const incObj = { $inc: { unreadCount: 1 } };
-    await Promise.all(
-      recipients?.map((recipient) => User?.findByIdAndUpdate(recipient, incObj))
-    );
-    onlineRecipients?.forEach((recip) => {
-      io.to(recip?.socketId).emit("chat_recipients_updated", {
-        recipient: recip?._id,
-        update: "increment",
+    if(recipients?.length) {
+      await Promise.all(
+        recipients?.map((recipient) => User?.findByIdAndUpdate(recipient, incObj))
+      );
+
+    }
+    if(onlineRecipients?.length) {
+
+      onlineRecipients?.forEach((recip) => {
+        io.to(recip?.socketId).emit("chat_recipients_updated", {
+          recipient: recip?._id,
+          update: "increment",
+        });
       });
-    });
+    }
 
     res.json({
       status: true,
