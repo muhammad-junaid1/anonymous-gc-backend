@@ -250,9 +250,23 @@ io.on("connection", (socket) => {
         type: "deleted",
         content: "This message was deleted",
         recipients: [],
-        image: "",
+        file: "",
       };
-      await Message.findByIdAndUpdate(id, override);
+      const deletedMessage = await Message.findByIdAndUpdate(id, override);
+        if (deletedMessage?.file) {
+      fs.unlink(
+        path.join(
+          __dirname,
+          "../files/" +
+            deletedMessage?.file?.slice(
+              deletedMessage?.file.indexOf("assets/") + 7
+            )
+        ),
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
 
       io.emit("chat_message_deleted", id);
     } catch (error) {
