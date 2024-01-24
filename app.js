@@ -11,6 +11,7 @@ const upload = require("./utils/multerStorage");
 const jwt = require("jsonwebtoken");
 const app = express();
 const http = require("http");
+const fs = require("fs");
 const { getUsers, setUsers, addUser } = require("./users");
 const server = http.createServer(app);
 require("dotenv/config");
@@ -270,6 +271,7 @@ io.on("connection", (socket) => {
 
       io.emit("chat_message_deleted", id);
     } catch (error) {
+      console.log(error);
       socket.emit("chat_delete_message_failed", true);
     }
   });
